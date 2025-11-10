@@ -1,12 +1,13 @@
 [package]
-authors = ["hiro08gh <hiro08gh@gmail.com>"]
 name = "alx"
 description = "Setup simple alias manager"
+authors = ["hiro08gh <hiro08gh@gmail.com>"]
 version = "0.1.0"
 license = "MIT"
 categories = ["command-line-utilities"]
 repository = "https://github.com/hiro08gh/alx"
 edition = "2024"
+rust-version = "1.91.1"
 
 [[bin]]
 name = "alx"
