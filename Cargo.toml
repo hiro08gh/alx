@@ -8,6 +8,8 @@ categories = ["command-line-utilities"]
 repository = "https://github.com/hiro08gh/alx"
 edition = "2024"
 rust-version = "1.91.1"
+readme = "README.md"
+homepage ="https://github.com/hiro08gh/alx"
 
 [[bin]]
 name = "alx"

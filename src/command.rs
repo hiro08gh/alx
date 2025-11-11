@@ -179,15 +179,13 @@ pub fn list(group: Option<String>, enabled_only: bool) -> Result<()> {
     table.load_preset(UTF8_BORDERS_ONLY);
     table.apply_modifier(UTF8_ROUND_CORNERS);
     table.set_content_arrangement(ContentArrangement::Dynamic);
-    table.set_header(vec!["Status", "Name", "Command", "Description", "Group"]);
+    table.set_header(vec!["Name", "Command", "Description", "Group"]);
 
     for alias in aliases {
-        let status = if alias.enabled { "✓" } else { "✗" };
         let description = alias.description.as_deref().unwrap_or("-");
         let group = alias.group.as_deref().unwrap_or("-");
 
         table.add_row(vec![
-            Cell::new(status),
             Cell::new(&alias.name),
             Cell::new(&alias.command),
             Cell::new(description),
@@ -217,15 +215,13 @@ pub fn search(keyword: String) -> Result<()> {
     table.load_preset(UTF8_BORDERS_ONLY);
     table.apply_modifier(UTF8_ROUND_CORNERS);
     table.set_content_arrangement(ContentArrangement::Dynamic);
-    table.set_header(vec!["Status", "Name", "Command", "Description", "Group"]);
+    table.set_header(vec!["Name", "Command", "Description", "Group"]);
 
     for alias in results {
-        let status = if alias.enabled { "✓" } else { "✗" };
         let description = alias.description.as_deref().unwrap_or("-");
         let group = alias.group.as_deref().unwrap_or("-");
 
         table.add_row(vec![
-            Cell::new(status),
             Cell::new(&alias.name),
             Cell::new(&alias.command),
             Cell::new(description),
