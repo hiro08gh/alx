@@ -12,99 +12,99 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// Initialize alx configuration
+    // Initialize alx configuration
     Init,
 
-    /// Add a new alias
+    // Add a new alias
     Add {
-        /// Name of the alias
+        // Name of the alias
         name: String,
 
-        /// Command to execute
+        // Command to execute
         command: String,
 
-        /// Description of the alias
+        // Description of the alias
         #[arg(short, long)]
         description: Option<String>,
 
-        /// Group/category for the alias
+        // Group/category for the alias
         #[arg(short, long)]
         group: Option<String>,
     },
 
-    /// Remove one or more aliases
+    // Remove one or more aliases
     Remove {
-        /// Names of the aliases to remove
+        // Names of the aliases to remove
         names: Vec<String>,
     },
 
-    /// List all aliases
+    // List all aliases
     List {
-        /// Filter by group
+        // Filter by group
         #[arg(short, long)]
         group: Option<String>,
 
-        /// Show only enabled aliases
+        // Show only enabled aliases
         #[arg(short, long)]
         enabled_only: bool,
     },
 
-    /// Search aliases by keyword
+    // Search aliases by keyword
     Search {
-        /// Keyword to search for
+        // Keyword to search for
         keyword: String,
     },
 
-    /// Edit an alias
+    // Edit an alias
     Edit {
-        /// Name of the alias to edit
+        // Name of the alias to edit
         name: String,
 
-        /// New command (optional)
+        // New command (optional)
         #[arg(short, long)]
         command: Option<String>,
 
-        /// New description (optional)
+        // New description (optional)
         #[arg(short, long)]
         description: Option<String>,
 
-        /// New group (optional)
+        // New group (optional)
         #[arg(short, long)]
         group: Option<String>,
     },
 
-    /// Enable an alias
+    // Enable an alias
     Enable {
-        /// Name of the alias to enable
+        // Name of the alias to enable
         name: String,
     },
 
-    /// Disable an alias
+    // Disable an alias
     Disable {
-        /// Name of the alias to disable
+        // Name of the alias to disable
         name: String,
     },
 
-    /// Export aliases to a file
+    // Export aliases to a file
     Export {
-        /// Output file path
+        // Output file path
         #[arg(short, long)]
         output: Option<String>,
 
-        /// Export format (json or toml)
+        // Export format (json or toml)
         #[arg(short, long, default_value = "json")]
         format: String,
     },
 
-    /// Import aliases from a file
+    // Import aliases from a file
     Import {
-        /// Input file path
+        // Input file path
         file: String,
     },
 
-    /// Show all available groups
+    // Show all available groups
     Groups,
 
-    /// Show information about alx
+    // Show information about alx
     Info,
 }
