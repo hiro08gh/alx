@@ -1,5 +1,7 @@
 # alx
 
+<img width="355" height="172" alt="スクリーンショット 0007-11-11 18 07 14" src="https://github.com/user-attachments/assets/58245b9a-406b-4847-8b21-9c3530ef68c4" />
+
 A simple alias manager for multiple shells written in Rust.
 
 ## Features
