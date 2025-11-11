@@ -43,24 +43,26 @@ alx add gp "git push" --group git
 
 ### 3. Add to your shell config
 
+First, your running `alx info` command. Please check `Shell aliases` path.
+
 Add the following line to your shell configuration file:
 
 **Bash** (`~/.bashrc`):
 
 ```bash
-[ -f ~/.config/alx/shell/aliases.sh ] && source ~/.config/alx/shell/aliases.sh
+[ -f ~/shell_aliases_path/aliases.sh ] && source ~/shell_aliases_path/aliases.sh
 ```
 
 **Zsh** (`~/.zshrc`):
 
 ```bash
-[ -f ~/.config/alx/shell/aliases.sh ] && source ~/.config/alx/shell/aliases.sh
+[ -f ~/shell_aliases_path/aliases.sh ] && source ~/shell_aliases_path/aliases.sh
 ```
 
 **Fish** (`~/.config/fish/config.fish`):
 
 ```fish
-source ~/.config/alx/shell/aliases.sh
+source ~/shell_aliases_path/aliases.sh
 ```
 
 ## Usage
