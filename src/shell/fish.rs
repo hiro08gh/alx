@@ -1,6 +1,6 @@
 use crate::alias::Alias;
 use crate::error::Result;
-use crate::shell::{ShellHandler, ShellType};
+use crate::shell::ShellHandler;
 use std::path::PathBuf;
 
 pub struct FishHandler;
@@ -17,10 +17,6 @@ impl FishHandler {
 }
 
 impl ShellHandler for FishHandler {
-    fn shell_type(&self) -> ShellType {
-        ShellType::Fish
-    }
-
     fn generate_alias_line(&self, alias: &Alias) -> String {
         let escaped_command = Self::escape_command(&alias.command);
         format!("alias {} '{}'", alias.name, escaped_command)

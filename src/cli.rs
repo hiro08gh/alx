@@ -32,10 +32,10 @@ pub enum Commands {
         group: Option<String>,
     },
 
-    /// Remove an alias
+    /// Remove one or more aliases
     Remove {
-        /// Name of the alias to remove
-        name: String,
+        /// Names of the aliases to remove
+        names: Vec<String>,
     },
 
     /// List all aliases
@@ -83,13 +83,6 @@ pub enum Commands {
     Disable {
         /// Name of the alias to disable
         name: String,
-    },
-
-    /// Sync aliases to shell configuration
-    Sync {
-        /// Target shell (bash, zsh, fish)
-        #[arg(short, long)]
-        shell: Option<String>,
     },
 
     /// Export aliases to a file

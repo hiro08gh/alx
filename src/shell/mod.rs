@@ -24,7 +24,6 @@ impl ShellType {
 }
 
 pub trait ShellHandler {
-    fn shell_type(&self) -> ShellType;
     fn generate_alias_line(&self, alias: &Alias) -> String;
     fn generate_aliases_file(&self, aliases: &[&Alias]) -> String;
     fn config_file_path(&self) -> Result<std::path::PathBuf>;
