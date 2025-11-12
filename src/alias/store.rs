@@ -74,10 +74,6 @@ impl AliasStore {
             .collect()
     }
 
-    pub fn list_enabled(&self) -> Vec<&Alias> {
-        self.aliases.iter().filter(|a| a.enabled).collect()
-    }
-
     pub fn search(&self, keyword: &str) -> Vec<&Alias> {
         let keyword_lower = keyword.to_lowercase();
         self.aliases

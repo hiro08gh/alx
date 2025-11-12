@@ -28,10 +28,7 @@ fn run() -> Result<()> {
             group,
         } => command::add(name, command, description, group),
         Commands::Remove { names } => command::remove(names),
-        Commands::List {
-            group,
-            enabled_only,
-        } => command::list(group, enabled_only),
+        Commands::List { group } => command::list(group),
         Commands::Search { keyword } => command::search(keyword),
         Commands::Edit {
             name,
@@ -39,8 +36,6 @@ fn run() -> Result<()> {
             description,
             group,
         } => command::edit(name, command, description, group),
-        Commands::Enable { name } => command::enable(name),
-        Commands::Disable { name } => command::disable(name),
         Commands::Export { output, format } => command::export(output, format),
         Commands::Import { file } => command::import(file),
         Commands::Groups => command::groups(),

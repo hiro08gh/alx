@@ -25,8 +25,8 @@ fn sync_aliases() -> Result<()> {
         ShellType::Fish => Box::new(FishHandler::new()),
     };
 
-    let enabled_aliases = store.list_enabled();
-    let content = handler.generate_aliases_file(&enabled_aliases);
+    let aliases: Vec<&crate::alias::Alias> = store.list().iter().collect();
+    let content = handler.generate_aliases_file(&aliases);
 
     let shell_aliases_file = config_manager.shell_aliases_file();
     fs::write(&shell_aliases_file, content)?;
@@ -158,14 +158,12 @@ pub fn remove(names: Vec<String>) -> Result<()> {
     Ok(())
 }
 
-pub fn list(group: Option<String>, enabled_only: bool) -> Result<()> {
+pub fn list(group: Option<String>) -> Result<()> {
     let config_manager = ConfigManager::new()?;
     let store = AliasStore::load(config_manager.aliases_file())?;
 
     let aliases: Vec<&Alias> = if let Some(grp) = group {
         store.list_by_group(&grp)
-    } else if enabled_only {
-        store.list_enabled()
     } else {
         store.list().iter().collect()
     };
@@ -271,42 +269,6 @@ pub fn edit(
     Ok(())
 }
 
-pub fn enable(name: String) -> Result<()> {
-    let config_manager = ConfigManager::new()?;
-    let mut store = AliasStore::load(config_manager.aliases_file())?;
-
-    let alias = store
-        .get_mut(&name)
-        .ok_or_else(|| error::AlxError::AliasNotFound(name.clone()))?;
-
-    alias.enable();
-    store.save(config_manager.aliases_file())?;
-
-    sync_aliases()?;
-
-    println!("✓ Enabled alias: {}", name);
-
-    Ok(())
-}
-
-pub fn disable(name: String) -> Result<()> {
-    let config_manager = ConfigManager::new()?;
-    let mut store = AliasStore::load(config_manager.aliases_file())?;
-
-    let alias = store
-        .get_mut(&name)
-        .ok_or_else(|| error::AlxError::AliasNotFound(name.clone()))?;
-
-    alias.disable();
-    store.save(config_manager.aliases_file())?;
-
-    sync_aliases()?;
-
-    println!("✓ Disabled alias: {}", name);
-
-    Ok(())
-}
-
 pub fn export(output: Option<String>, format: String) -> Result<()> {
     let config_manager = ConfigManager::new()?;
     let store = AliasStore::load(config_manager.aliases_file())?;
@@ -406,7 +368,6 @@ pub fn info() -> Result<()> {
     if let Ok(store) = AliasStore::load(config_manager.aliases_file()) {
         println!("\nStatistics:");
         println!("  Total aliases: {}", store.list().len());
-        println!("  Enabled aliases: {}", store.list_enabled().len());
         println!("  Groups: {}", store.groups().len());
     }
 
