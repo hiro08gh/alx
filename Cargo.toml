@@ -2,7 +2,7 @@
 name = "alx"
 description = "Setup simple alias manager"
 authors = ["hiro08gh <hiro08gh@gmail.com>"]
-version = "0.2.0"
+version = "0.3.0"
 license = "MIT"
 categories = ["command-line-utilities"]
 repository = "https://github.com/hiro08gh/alx"
