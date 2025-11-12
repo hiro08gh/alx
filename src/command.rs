@@ -65,11 +65,15 @@ pub fn init() -> Result<()> {
             println!("\n     # Add to {:?}", config_file);
         }
 
+        let shell_aliases_file = config_manager.shell_aliases_file();
+        let aliases_path = shell_aliases_file.display();
+
         if shell_type == ShellType::Fish {
-            println!("     source ~/.config/alx/shell/aliases.sh");
+            println!("     source {}", aliases_path);
         } else {
             println!(
-                "     [ -f ~/.config/alx/shell/aliases.sh ] && source ~/.config/alx/shell/aliases.sh"
+                "     [ -f {} ] && source {}",
+                aliases_path, aliases_path
             );
         }
     }
