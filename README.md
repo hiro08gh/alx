@@ -1,6 +1,8 @@
 # alx
 
-<img width="355" height="172" alt="top image" src="assets/top.png" />
+<p align="center">
+  <img width="700" alt="top image" src="assets/top.png" />
+</p>
 
 A simple alias manager for multiple shells written in Rust.
 
