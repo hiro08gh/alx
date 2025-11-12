@@ -378,3 +378,71 @@ pub fn info() -> Result<()> {
 
     Ok(())
 }
+
+pub fn migrate(from: Option<String>) -> Result<()> {
+    let config_manager = ConfigManager::new()?;
+    let mut store = AliasStore::load(config_manager.aliases_file())?;
+
+    // Determine the config file path and shell type
+    let (config_path, shell_type) = if let Some(path) = from {
+        let path_buf = std::path::PathBuf::from(path);
+        let shell_type = ShellDetector::detect_from_path(&path_buf)?;
+        (path_buf, shell_type)
+    } else {
+        let shell_type = ShellDetector::detect()?;
+        let handler: Box<dyn ShellHandler> = match shell_type {
+            ShellType::Bash => Box::new(BashHandler::new()),
+            ShellType::Zsh => Box::new(ZshHandler::new()),
+            ShellType::Fish => Box::new(FishHandler::new()),
+        };
+        (handler.config_file_path()?, shell_type)
+    };
+
+    if !config_path.exists() {
+        return Err(error::AlxError::ConfigError(format!(
+            "Configuration file not found: {:?}",
+            config_path
+        )));
+    }
+
+    let handler: Box<dyn ShellHandler> = match shell_type {
+        ShellType::Bash => Box::new(BashHandler::new()),
+        ShellType::Zsh => Box::new(ZshHandler::new()),
+        ShellType::Fish => Box::new(FishHandler::new()),
+    };
+
+    println!("Migrating aliases from: {:?}", config_path);
+
+    // Parse aliases from the config file
+    let parsed_aliases = handler.parse_aliases_from_file(&config_path)?;
+
+    if parsed_aliases.is_empty() {
+        println!("No aliases found in the configuration file");
+        return Ok(());
+    }
+
+    let mut imported_count = 0;
+    let mut skipped_count = 0;
+
+    for (name, command) in parsed_aliases {
+        if store.exists(&name) {
+            skipped_count += 1;
+            eprintln!("  Skipped existing alias: {}", name);
+        } else {
+            let alias = Alias::new(name.clone(), command);
+            store.add(alias)?;
+            imported_count += 1;
+        }
+    }
+
+    store.save(config_manager.aliases_file())?;
+
+    sync_aliases()?;
+
+    println!("✓ Migrated {} aliases", imported_count);
+    if skipped_count > 0 {
+        println!("  Skipped {} existing aliases", skipped_count);
+    }
+
+    Ok(())
+}

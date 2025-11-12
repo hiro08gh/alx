@@ -91,4 +91,11 @@ pub enum Commands {
 
     // Show information about alx
     Info,
+
+    // Migrate aliases from shell configuration file
+    Migrate {
+        // Shell configuration file to migrate from (optional)
+        #[arg(short, long)]
+        from: Option<String>,
+    },
 }

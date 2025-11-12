@@ -66,6 +66,76 @@ impl ShellHandler for BashHandler {
         })?;
         Ok(home.join(".bashrc"))
     }
+
+    fn parse_aliases_from_file(&self, path: &std::path::Path) -> Result<Vec<(String, String)>> {
+        use std::fs;
+
+        let content = fs::read_to_string(path)?;
+        let mut aliases = Vec::new();
+        let mut current_line = String::new();
+
+        for line in content.lines() {
+            let trimmed = line.trim();
+
+            // Handle line continuation
+            if current_line.is_empty() {
+                current_line = trimmed.to_string();
+            } else {
+                current_line.push(' ');
+                current_line.push_str(trimmed);
+            }
+
+            // Check if line continues
+            if current_line.ends_with('\\') {
+                current_line.pop(); // Remove backslash
+                continue;
+            }
+
+            // Parse alias from the complete line
+            if let Some(alias) = Self::parse_alias_line(&current_line) {
+                aliases.push(alias);
+            }
+
+            current_line.clear();
+        }
+
+        Ok(aliases)
+    }
+}
+
+impl BashHandler {
+    fn parse_alias_line(line: &str) -> Option<(String, String)> {
+        let trimmed = line.trim();
+
+        // Skip comments and empty lines
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            return None;
+        }
+
+        // Check if line starts with 'alias '
+        if !trimmed.starts_with("alias ") {
+            return None;
+        }
+
+        // Remove 'alias ' prefix
+        let alias_def = trimmed.strip_prefix("alias ")?.trim();
+
+        // Find the '=' separator
+        let equals_pos = alias_def.find('=')?;
+        let name = alias_def[..equals_pos].trim().to_string();
+        let value_part = alias_def[equals_pos + 1..].trim();
+
+        // Remove quotes (single or double)
+        let command = if (value_part.starts_with('\'') && value_part.ends_with('\''))
+            || (value_part.starts_with('"') && value_part.ends_with('"'))
+        {
+            value_part[1..value_part.len() - 1].to_string()
+        } else {
+            value_part.to_string()
+        };
+
+        Some((name, command))
+    }
 }
 
 impl Default for BashHandler {
@@ -77,6 +147,7 @@ impl Default for BashHandler {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Write;
 
     #[test]
     fn test_generate_alias_line() {
@@ -111,5 +182,51 @@ mod tests {
         assert!(content.contains("alias ll='ls -la'"));
         assert!(content.contains("alias gs='git status'"));
         assert!(content.contains("# List all files"));
+    }
+
+    #[test]
+    fn test_parse_aliases_from_file() {
+        let handler = BashHandler::new();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let file_path = temp_dir.path().join(".bashrc");
+
+        let content = r#"
+# Some comment
+alias ll='ls -la'
+alias gs="git status"
+alias gp='git push'
+
+# Multi-line alias
+alias complex='echo "hello" && \
+  echo "world"'
+
+# Not an alias
+export PATH=$PATH:/usr/local/bin
+"#;
+
+        let mut file = std::fs::File::create(&file_path).unwrap();
+        file.write_all(content.as_bytes()).unwrap();
+
+        let aliases = handler.parse_aliases_from_file(&file_path).unwrap();
+
+        assert_eq!(aliases.len(), 4);
+        assert!(aliases.contains(&("ll".to_string(), "ls -la".to_string())));
+        assert!(aliases.contains(&("gs".to_string(), "git status".to_string())));
+        assert!(aliases.contains(&("gp".to_string(), "git push".to_string())));
+        assert!(aliases.iter().any(|(name, _)| name == "complex"));
+    }
+
+    #[test]
+    fn test_parse_aliases_empty_file() {
+        let handler = BashHandler::new();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let file_path = temp_dir.path().join(".bashrc");
+
+        let mut file = std::fs::File::create(&file_path).unwrap();
+        file.write_all(b"# Just comments\n").unwrap();
+
+        let aliases = handler.parse_aliases_from_file(&file_path).unwrap();
+
+        assert_eq!(aliases.len(), 0);
     }
 }

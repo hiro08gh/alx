@@ -27,4 +27,5 @@ pub trait ShellHandler {
     fn generate_alias_line(&self, alias: &Alias) -> String;
     fn generate_aliases_file(&self, aliases: &[&Alias]) -> String;
     fn config_file_path(&self) -> Result<std::path::PathBuf>;
+    fn parse_aliases_from_file(&self, path: &std::path::Path) -> Result<Vec<(String, String)>>;
 }

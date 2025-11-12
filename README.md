@@ -141,6 +141,25 @@ alx import aliases.json
 alx groups
 ```
 
+## Migration guide
+
+You can automatically apply settings from your current Bash shell configuration to alx.
+
+Run the `alx migrate` command. This command targets files such as `.bashrc`, `.zshrc`, and `config.fish`, specifically focusing on `alias (ex: alias gs="git status")` definitions within those files.
+
+```bash
+# Initialize alx
+alx init
+
+# Migrate your target shell
+alx migrate or alx migrate --from "./bashrc"
+
+# Check if the aliases are applied correctly
+alx list
+```
+
+Remove the aliases from the shell settings, if there are no issues.
+
 ## Development
 
 ### Build
