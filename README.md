@@ -152,7 +152,7 @@ Run the `alx migrate` command. This command targets files such as `.bashrc`, `.z
 alx init
 
 # Migrate your target shell
-alx migrate or alx migrate --from "./bashrc"
+alx migrate or alx migrate --from "./.bashrc"
 
 # Check if the aliases are applied correctly
 alx list
