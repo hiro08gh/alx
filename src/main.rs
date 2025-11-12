@@ -45,5 +45,6 @@ fn run() -> Result<()> {
         Commands::Import { file } => command::import(file),
         Commands::Groups => command::groups(),
         Commands::Info => command::info(),
+        Commands::Migrate { from, group } => command::migrate(from, group),
     }
 }

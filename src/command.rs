@@ -416,3 +416,68 @@ pub fn info() -> Result<()> {
 
     Ok(())
 }
+
+pub fn migrate(from: Option<String>, group: Option<String>) -> Result<()> {
+    let config_manager = ConfigManager::new()?;
+    let mut store = AliasStore::load(config_manager.aliases_file())?;
+
+    let shell_type = ShellDetector::detect()?;
+
+    let handler: Box<dyn ShellHandler> = match shell_type {
+        ShellType::Bash => Box::new(BashHandler::new()),
+        ShellType::Zsh => Box::new(ZshHandler::new()),
+        ShellType::Fish => Box::new(FishHandler::new()),
+    };
+
+    // Determine the config file path
+    let config_path = if let Some(path) = from {
+        std::path::PathBuf::from(path)
+    } else {
+        handler.config_file_path()?
+    };
+
+    if !config_path.exists() {
+        return Err(error::AlxError::ConfigError(format!(
+            "Configuration file not found: {:?}",
+            config_path
+        )));
+    }
+
+    println!("Migrating aliases from: {:?}", config_path);
+
+    // Parse aliases from the config file
+    let parsed_aliases = handler.parse_aliases_from_file(&config_path)?;
+
+    if parsed_aliases.is_empty() {
+        println!("No aliases found in the configuration file");
+        return Ok(());
+    }
+
+    let mut imported_count = 0;
+    let mut skipped_count = 0;
+
+    for (name, command) in parsed_aliases {
+        if store.exists(&name) {
+            skipped_count += 1;
+            eprintln!("  Skipped existing alias: {}", name);
+        } else {
+            let mut alias = Alias::new(name.clone(), command);
+            if let Some(grp) = &group {
+                alias = alias.with_group(grp.clone());
+            }
+            store.add(alias)?;
+            imported_count += 1;
+        }
+    }
+
+    store.save(config_manager.aliases_file())?;
+
+    sync_aliases()?;
+
+    println!("✓ Migrated {} aliases", imported_count);
+    if skipped_count > 0 {
+        println!("  Skipped {} existing aliases", skipped_count);
+    }
+
+    Ok(())
+}
