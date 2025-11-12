@@ -97,9 +97,5 @@ pub enum Commands {
         // Shell configuration file to migrate from (optional)
         #[arg(short, long)]
         from: Option<String>,
-
-        // Group to assign to migrated aliases (optional)
-        #[arg(short, long)]
-        group: Option<String>,
     },
 }

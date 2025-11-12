@@ -379,7 +379,7 @@ pub fn info() -> Result<()> {
     Ok(())
 }
 
-pub fn migrate(from: Option<String>, group: Option<String>) -> Result<()> {
+pub fn migrate(from: Option<String>) -> Result<()> {
     let config_manager = ConfigManager::new()?;
     let mut store = AliasStore::load(config_manager.aliases_file())?;
 
@@ -429,10 +429,7 @@ pub fn migrate(from: Option<String>, group: Option<String>) -> Result<()> {
             skipped_count += 1;
             eprintln!("  Skipped existing alias: {}", name);
         } else {
-            let mut alias = Alias::new(name.clone(), command);
-            if let Some(grp) = &group {
-                alias = alias.with_group(grp.clone());
-            }
+            let alias = Alias::new(name.clone(), command);
             store.add(alias)?;
             imported_count += 1;
         }
