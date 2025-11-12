@@ -359,7 +359,7 @@ pub fn info() -> Result<()> {
     let config_manager = ConfigManager::new()?;
 
     println!("alx - Modern Alias Manager");
-    println!("Version: 0.1.0");
+    println!("Version: {}", env!("CARGO_PKG_VERSION"));
     println!("\nConfiguration:");
     println!("  Config directory: {:?}", config_manager.config_dir());
     println!("  Config file: {:?}", config_manager.config_file());

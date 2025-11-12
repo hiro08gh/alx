@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "alx")]
 #[command(author = "hiro08gh")]
-#[command(version = "0.1.0")]
+#[command(version = env!("CARGO_PKG_VERSION"))]
 #[command(about = "A modern alias manager for multiple shells", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
