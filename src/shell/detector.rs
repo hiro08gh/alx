@@ -30,9 +30,7 @@ impl ShellDetector {
         let file_name = path
             .file_name()
             .and_then(|n| n.to_str())
-            .ok_or_else(|| {
-                AlxError::ConfigError(format!("Invalid file path: {:?}", path))
-            })?;
+            .ok_or_else(|| AlxError::ConfigError(format!("Invalid file path: {:?}", path)))?;
 
         // Check for bash config files
         if file_name.contains("bash") {
