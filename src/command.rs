@@ -383,19 +383,19 @@ pub fn migrate(from: Option<String>, group: Option<String>) -> Result<()> {
     let config_manager = ConfigManager::new()?;
     let mut store = AliasStore::load(config_manager.aliases_file())?;
 
-    let shell_type = ShellDetector::detect()?;
-
-    let handler: Box<dyn ShellHandler> = match shell_type {
-        ShellType::Bash => Box::new(BashHandler::new()),
-        ShellType::Zsh => Box::new(ZshHandler::new()),
-        ShellType::Fish => Box::new(FishHandler::new()),
-    };
-
-    // Determine the config file path
-    let config_path = if let Some(path) = from {
-        std::path::PathBuf::from(path)
+    // Determine the config file path and shell type
+    let (config_path, shell_type) = if let Some(path) = from {
+        let path_buf = std::path::PathBuf::from(path);
+        let shell_type = ShellDetector::detect_from_path(&path_buf)?;
+        (path_buf, shell_type)
     } else {
-        handler.config_file_path()?
+        let shell_type = ShellDetector::detect()?;
+        let handler: Box<dyn ShellHandler> = match shell_type {
+            ShellType::Bash => Box::new(BashHandler::new()),
+            ShellType::Zsh => Box::new(ZshHandler::new()),
+            ShellType::Fish => Box::new(FishHandler::new()),
+        };
+        (handler.config_file_path()?, shell_type)
     };
 
     if !config_path.exists() {
@@ -404,6 +404,12 @@ pub fn migrate(from: Option<String>, group: Option<String>) -> Result<()> {
             config_path
         )));
     }
+
+    let handler: Box<dyn ShellHandler> = match shell_type {
+        ShellType::Bash => Box::new(BashHandler::new()),
+        ShellType::Zsh => Box::new(ZshHandler::new()),
+        ShellType::Fish => Box::new(FishHandler::new()),
+    };
 
     println!("Migrating aliases from: {:?}", config_path);
 

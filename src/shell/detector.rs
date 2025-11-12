@@ -1,6 +1,7 @@
 use crate::error::{AlxError, Result};
 use crate::shell::ShellType;
 use std::env;
+use std::path::Path;
 
 pub struct ShellDetector;
 
@@ -22,6 +23,36 @@ impl ShellDetector {
         }
 
         Err(AlxError::ShellDetectionFailed)
+    }
+
+    pub fn detect_from_path<P: AsRef<Path>>(path: P) -> Result<ShellType> {
+        let path = path.as_ref();
+        let file_name = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .ok_or_else(|| {
+                AlxError::ConfigError(format!("Invalid file path: {:?}", path))
+            })?;
+
+        // Check for bash config files
+        if file_name.contains("bash") {
+            return Ok(ShellType::Bash);
+        }
+
+        // Check for zsh config files
+        if file_name.contains("zsh") {
+            return Ok(ShellType::Zsh);
+        }
+
+        // Check for fish config files
+        if file_name.contains("fish") || path.to_string_lossy().contains("fish") {
+            return Ok(ShellType::Fish);
+        }
+
+        Err(AlxError::ConfigError(format!(
+            "Could not detect shell type from file path: {:?}",
+            path
+        )))
     }
 
     fn parse_shell_name(name: &str) -> Result<ShellType> {
