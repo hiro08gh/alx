@@ -3,11 +3,11 @@ use crate::error::{AlxError, Result};
 pub struct AliasValidator;
 
 impl AliasValidator {
-    /// Validate alias name
-    /// - Must start with a letter or underscore
-    /// - Can contain letters, numbers, underscores, and hyphens
-    /// - Cannot be empty
-    /// - Cannot contain spaces
+    // Validate alias name
+    // - Must start with a letter or underscore
+    // - Can contain letters, numbers, underscores, and hyphens
+    // - Cannot be empty
+    // - Cannot contain spaces
     pub fn validate_name(name: &str) -> Result<()> {
         if name.is_empty() {
             return Err(AlxError::InvalidAliasName(
@@ -40,8 +40,8 @@ impl AliasValidator {
         Ok(())
     }
 
-    /// Validate alias command
-    /// - Cannot be empty
+    // Validate alias command
+    // - Cannot be empty
     pub fn validate_command(command: &str) -> Result<()> {
         if command.trim().is_empty() {
             return Err(AlxError::InvalidCommand(
@@ -52,7 +52,7 @@ impl AliasValidator {
         Ok(())
     }
 
-    /// Check if name is a reserved shell keyword
+    // Check if name is a reserved shell keyword
     pub fn is_reserved_keyword(name: &str) -> bool {
         const RESERVED: &[&str] = &[
             "if", "then", "else", "elif", "fi", "case", "esac", "for", "select", "while", "until",

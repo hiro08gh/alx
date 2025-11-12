@@ -43,10 +43,6 @@ pub enum Commands {
         // Filter by group
         #[arg(short, long)]
         group: Option<String>,
-
-        // Show only enabled aliases
-        #[arg(short, long)]
-        enabled_only: bool,
     },
 
     // Search aliases by keyword
@@ -71,18 +67,6 @@ pub enum Commands {
         // New group (optional)
         #[arg(short, long)]
         group: Option<String>,
-    },
-
-    // Enable an alias
-    Enable {
-        // Name of the alias to enable
-        name: String,
-    },
-
-    // Disable an alias
-    Disable {
-        // Name of the alias to disable
-        name: String,
     },
 
     // Export aliases to a file

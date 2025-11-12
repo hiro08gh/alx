@@ -10,7 +10,6 @@ pub struct Alias {
     pub command: String,
     pub description: Option<String>,
     pub group: Option<String>,
-    pub enabled: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -23,7 +22,6 @@ impl Alias {
             command,
             description: None,
             group: None,
-            enabled: true,
             created_at: now,
             updated_at: now,
         }
@@ -37,16 +35,6 @@ impl Alias {
     pub fn with_group(mut self, group: String) -> Self {
         self.group = Some(group);
         self
-    }
-
-    pub fn disable(&mut self) {
-        self.enabled = false;
-        self.updated_at = Utc::now();
-    }
-
-    pub fn enable(&mut self) {
-        self.enabled = true;
-        self.updated_at = Utc::now();
     }
 
     pub fn update_command(&mut self, command: String) {
@@ -64,7 +52,6 @@ mod tests {
         let alias = Alias::new("ll".to_string(), "ls -la".to_string());
         assert_eq!(alias.name, "ll");
         assert_eq!(alias.command, "ls -la");
-        assert!(alias.enabled);
         assert!(alias.description.is_none());
         assert!(alias.group.is_none());
     }
@@ -81,17 +68,5 @@ mod tests {
         let alias =
             Alias::new("gs".to_string(), "git status".to_string()).with_group("git".to_string());
         assert_eq!(alias.group, Some("git".to_string()));
-    }
-
-    #[test]
-    fn test_disable_enable() {
-        let mut alias = Alias::new("ll".to_string(), "ls -la".to_string());
-        assert!(alias.enabled);
-
-        alias.disable();
-        assert!(!alias.enabled);
-
-        alias.enable();
-        assert!(alias.enabled);
     }
 }
