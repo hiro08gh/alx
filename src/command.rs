@@ -71,10 +71,7 @@ pub fn init() -> Result<()> {
         if shell_type == ShellType::Fish {
             println!("     source {}", aliases_path);
         } else {
-            println!(
-                "     [ -f {} ] && source {}",
-                aliases_path, aliases_path
-            );
+            println!("     [ -f {} ] && source {}", aliases_path, aliases_path);
         }
     }
 
