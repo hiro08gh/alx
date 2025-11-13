@@ -77,8 +77,8 @@ pub fn init() -> Result<()> {
         .map_err(|e| error::AlxError::ConfigError(format!("Failed to select shell: {}", e)))?;
 
     // Parse selected shell
-    let selected_shell = if selection == 0 && default_shell.is_some() {
-        default_shell.unwrap()
+    let selected_shell = if let (0, Some(default)) = (selection, default_shell) {
+        default
     } else {
         let shell_name = shell_options[selection].split_whitespace().next().unwrap();
         match shell_name {
@@ -112,7 +112,10 @@ pub fn init() -> Result<()> {
     println!("     {}", source_line);
 
     let should_add = Confirm::new()
-        .with_prompt(format!("Do you want to add this line to '{}' automatically?", config_file.display()))
+        .with_prompt(format!(
+            "Do you want to add this line to '{}' automatically?",
+            config_file.display()
+        ))
         .default(false)
         .interact()
         .map_err(|e| error::AlxError::ConfigError(format!("Failed to confirm: {}", e)))?;
@@ -127,7 +130,10 @@ pub fn init() -> Result<()> {
 
         // Check if the line already exists
         if file_content.contains(&source_line) {
-            println!("✓ Source line already exists in '{}'", config_file.display());
+            println!(
+                "✓ Source line already exists in '{}'",
+                config_file.display()
+            );
         } else {
             // Add newline if file doesn't end with one
             if !file_content.is_empty() && !file_content.ends_with('\n') {
