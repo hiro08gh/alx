@@ -24,33 +24,41 @@ cargo install alx
 
 ## Quick Start
 
-### 1. Initialize
+### Initialize
 
 ```bash
 alx init
 ```
 
-### 2. Add to your shell config
-
-First, run the `alx info` command, and then check the path for `Shell aliases`.
-
-Add the following line to your shell configuration file:
-
-**Bash** (`~/.bashrc`):
+Choose your shell.
 
 ```bash
+Initialized alx configuration at: "/your_alx_path/alx"
+Select your shell:
+> zsh (default)
+  bash
+  fis
+```
+
+Choose whether to write the 'alx' alias configuration to your shell file. The default is No.
+
+```bash
+To enable aliases, add the following line to your shell config:
+     # Add to '/your/.zshrc'
+     [ -f '/your_alx_path/alx/shell/aliases.sh' ] && source '/your_alx_path/alx/shell/aliases.sh'
+Do you want to add this line to '/your/.zshrc' automatically? [y/N]
+```
+
+See below for manual setup.
+
+```bash
+# Bash (`~/.bashrc`):
 [ -f ~/your_alx_path/aliases.sh ] && source ~/your_alx_path/aliases.sh
-```
 
-**Zsh** (`~/.zshrc`):
-
-```bash
+# Zsh (`~/.zshrc`):
 [ -f ~/your_alias_path/aliases.sh ] && source ~/your_alias_path/aliases.sh
-```
 
-**Fish** (`~/.config/fish/config.fish`):
-
-```fish
+# Fish (`~/.config/fish/config.fish`):
 source ~/your_alias_path/aliases.sh
 ```
 

@@ -11,6 +11,7 @@ use crate::shell::{ShellHandler, ShellType};
 use comfy_table::{
     Cell, ContentArrangement, Table, modifiers::UTF8_ROUND_CORNERS, presets::UTF8_BORDERS_ONLY,
 };
+use dialoguer::{Confirm, Select};
 use std::fs;
 
 fn sync_aliases() -> Result<()> {
@@ -49,31 +50,111 @@ pub fn init() -> Result<()> {
         "✓ Initialized alx configuration at: {:?}",
         config_manager.config_dir()
     );
-    println!("\nNext steps:");
-    println!("  1. Add aliases with: alx add <name> <command>");
-    println!("  2. Add the following line to your shell config file:");
 
-    let shell = ShellDetector::detect().ok();
-    if let Some(shell_type) = shell {
-        let handler: Box<dyn ShellHandler> = match shell_type {
-            ShellType::Bash => Box::new(BashHandler::new()),
-            ShellType::Zsh => Box::new(ZshHandler::new()),
-            ShellType::Fish => Box::new(FishHandler::new()),
-        };
+    // Detect default shell
+    let default_shell = ShellDetector::detect().ok();
 
-        if let Ok(config_file) = handler.config_file_path() {
-            println!("\n     # Add to {:?}", config_file);
-        }
+    // Create shell options with default shell at the top
+    let mut shell_options = vec![];
+    if let Some(default) = default_shell {
+        shell_options.push(format!("{} (default)", default.as_str()));
+    }
 
-        let shell_aliases_file = config_manager.shell_aliases_file();
-        let aliases_path = shell_aliases_file.display();
-
-        if shell_type == ShellType::Fish {
-            println!("     source {}", aliases_path);
-        } else {
-            println!("     [ -f {} ] && source {}", aliases_path, aliases_path);
+    // Add other shells
+    let all_shells = vec![ShellType::Bash, ShellType::Zsh, ShellType::Fish];
+    for shell in all_shells {
+        if Some(shell) != default_shell {
+            shell_options.push(shell.as_str().to_string());
         }
     }
+
+    // Prompt user to select shell
+    let selection = Select::new()
+        .with_prompt("Select your shell")
+        .items(&shell_options)
+        .default(0)
+        .interact()
+        .map_err(|e| error::AlxError::ConfigError(format!("Failed to select shell: {}", e)))?;
+
+    // Parse selected shell
+    let selected_shell = if let (0, Some(default)) = (selection, default_shell) {
+        default
+    } else {
+        let shell_name = shell_options[selection].split_whitespace().next().unwrap();
+        match shell_name {
+            "bash" => ShellType::Bash,
+            "zsh" => ShellType::Zsh,
+            "fish" => ShellType::Fish,
+            _ => unreachable!(),
+        }
+    };
+
+    let handler: Box<dyn ShellHandler> = match selected_shell {
+        ShellType::Bash => Box::new(BashHandler::new()),
+        ShellType::Zsh => Box::new(ZshHandler::new()),
+        ShellType::Fish => Box::new(FishHandler::new()),
+    };
+
+    let shell_aliases_file = config_manager.shell_aliases_file();
+    let aliases_path = shell_aliases_file.display();
+
+    let source_line = if selected_shell == ShellType::Fish {
+        format!("source '{}'", aliases_path)
+    } else {
+        format!("[ -f '{}' ] && source '{}'", aliases_path, aliases_path)
+    };
+
+    // Ask if user wants to add source line automatically
+    let config_file = handler.config_file_path()?;
+
+    println!("\nTo enable aliases, add the following line to your shell config:");
+    println!("     # Add to '{}'", config_file.display());
+    println!("     {}", source_line);
+
+    let should_add = Confirm::new()
+        .with_prompt(format!(
+            "Do you want to add this line to '{}' automatically?",
+            config_file.display()
+        ))
+        .default(false)
+        .interact()
+        .map_err(|e| error::AlxError::ConfigError(format!("Failed to confirm: {}", e)))?;
+
+    if should_add {
+        // Add source line to shell config
+        let mut file_content = if config_file.exists() {
+            fs::read_to_string(&config_file)?
+        } else {
+            String::new()
+        };
+
+        // Check if the line already exists
+        if file_content.contains(&source_line) {
+            println!(
+                "✓ Source line already exists in '{}'",
+                config_file.display()
+            );
+        } else {
+            // Add newline if file doesn't end with one
+            if !file_content.is_empty() && !file_content.ends_with('\n') {
+                file_content.push('\n');
+            }
+
+            // Add comment and source line
+            file_content.push_str("\n# alx - alias manager\n");
+            file_content.push_str(&source_line);
+            file_content.push('\n');
+
+            fs::write(&config_file, file_content)?;
+            println!("✓ Added source line to '{}'", config_file.display());
+            println!("\nPlease restart your shell or run:");
+            println!("     source '{}'", config_file.display());
+        }
+    }
+
+    println!("\nNext steps:");
+    println!("  1. Add aliases with: alx add <name> <command>");
+    println!("  2. Run 'alx list' to see your aliases");
 
     Ok(())
 }
