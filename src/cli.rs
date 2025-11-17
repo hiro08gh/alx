@@ -24,7 +24,9 @@ pub enum Commands {
     /// Add a new alias
     ///
     /// Example: alx add ll 'ls -la' -d 'List all files' -g utils
-    #[command(after_help = "EXAMPLES:\n    alx add ll 'ls -la' -d 'List all files with details'\n    alx add gs 'git status' -d 'Show git status' -g git\n    alx add serve 'python -m http.server' -d 'Start HTTP server' -g dev")]
+    #[command(
+        after_help = "EXAMPLES:\n    alx add ll 'ls -la' -d 'List all files with details'\n    alx add gs 'git status' -d 'Show git status' -g git\n    alx add serve 'python -m http.server' -d 'Start HTTP server' -g dev"
+    )]
     Add {
         /// Name of the alias
         name: String,
@@ -63,7 +65,9 @@ pub enum Commands {
     /// Search aliases by keyword
     ///
     /// Example: alx search git
-    #[command(after_help = "EXAMPLES:\n    alx search git\n    alx search 'list files'\n    alx search server")]
+    #[command(
+        after_help = "EXAMPLES:\n    alx search git\n    alx search 'list files'\n    alx search server"
+    )]
     Search {
         /// Keyword to search for
         keyword: String,
@@ -72,7 +76,9 @@ pub enum Commands {
     /// Edit an alias
     ///
     /// Example: alx edit ll -c 'ls -lah' -d 'Updated description'
-    #[command(after_help = "EXAMPLES:\n    alx edit ll -c 'ls -lah'\n    alx edit gs -d 'Show git status with branch info'\n    alx edit serve -g webdev")]
+    #[command(
+        after_help = "EXAMPLES:\n    alx edit ll -c 'ls -lah'\n    alx edit gs -d 'Show git status with branch info'\n    alx edit serve -g webdev"
+    )]
     Edit {
         /// Name of the alias to edit
         name: String,
@@ -93,7 +99,9 @@ pub enum Commands {
     /// Export aliases to a file
     ///
     /// Example: alx export -o aliases.json -f json
-    #[command(after_help = "EXAMPLES:\n    alx export\n    alx export -o my-aliases.json\n    alx export -o aliases.toml -f toml")]
+    #[command(
+        after_help = "EXAMPLES:\n    alx export\n    alx export -o my-aliases.json\n    alx export -o aliases.toml -f toml"
+    )]
     Export {
         /// Output file path
         #[arg(short, long)]
@@ -107,7 +115,9 @@ pub enum Commands {
     /// Import aliases from a file
     ///
     /// Example: alx import aliases.json
-    #[command(after_help = "EXAMPLES:\n    alx import aliases.json\n    alx import backup.toml\n    alx import ~/Downloads/shared-aliases.json")]
+    #[command(
+        after_help = "EXAMPLES:\n    alx import aliases.json\n    alx import backup.toml\n    alx import ~/Downloads/shared-aliases.json"
+    )]
     Import {
         /// Input file path
         file: String,
@@ -126,7 +136,9 @@ pub enum Commands {
     /// Migrate aliases from shell configuration file
     ///
     /// Example: alx migrate -f ~/.bashrc
-    #[command(after_help = "EXAMPLES:\n    alx migrate\n    alx migrate -f ~/.bashrc\n    alx migrate -f ~/.zshrc")]
+    #[command(
+        after_help = "EXAMPLES:\n    alx migrate\n    alx migrate -f ~/.bashrc\n    alx migrate -f ~/.zshrc"
+    )]
     Migrate {
         /// Shell configuration file to migrate from (optional)
         #[arg(short, long)]
