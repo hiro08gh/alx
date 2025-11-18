@@ -11,8 +11,9 @@ pub struct ConfigManager {
 
 impl ConfigManager {
     pub fn new() -> Result<Self> {
-        let config_dir = dirs::config_dir()
-            .ok_or_else(|| AlxError::ConfigError("Could not find config directory".to_string()))?
+        let config_dir = dirs::home_dir()
+            .ok_or_else(|| AlxError::ConfigError("Could not find home directory".to_string()))?
+            .join(".config")
             .join("alx");
 
         let config_file = config_dir.join("config.toml");
